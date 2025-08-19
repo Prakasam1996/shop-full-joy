@@ -6,13 +6,17 @@ import Hero from './components/Hero';
 import CategoryFilter from './components/CategoryFilter';
 import ProductCard from './components/ProductCard';
 import FeaturedProducts from './components/FeaturedProducts';
+import SuggestedProducts from './components/SuggestedProducts';
+import PersonalizedDashboard from './components/PersonalizedDashboard';
 import Cart from './components/Cart';
 import AuthModal from './components/auth/AuthModal';
 import Footer from './components/Footer';
+import { useAuth } from './context/AuthContext';
 import { products, categories } from './data/products';
 import { Filter, SortAsc } from 'lucide-react';
 
 function App() {
+  const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -67,7 +71,19 @@ function App() {
         
           <Hero />
         
+          {user && <PersonalizedDashboard products={products} />}
+        
           <FeaturedProducts products={products} />
+
+          {/* Suggested Products for logged-in users */}
+          {user && (
+            <SuggestedProducts 
+              products={products}
+              maxItems={4}
+              title="Because You Viewed"
+              subtitle="Products similar to items in your cart and browsing history"
+            />
+          )}
 
           {/* Products Section */}
           <section className="py-16">
@@ -170,6 +186,16 @@ function App() {
             </div>
           </div>
           </section>
+
+          {/* Additional Suggestions at Bottom */}
+          {!user && (
+            <SuggestedProducts 
+              products={products}
+              maxItems={4}
+              title="Popular Right Now"
+              subtitle="See what other customers are loving"
+            />
+          )}
 
           <Footer />
         
